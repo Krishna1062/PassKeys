@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
 
 
 const Manager = (props) => {
+  const urlRef = useRef()
+  const unameRef = useRef()
+  const passwordRef = useRef()
   const [form, setForm] = useState({ site: "", username: "", password: "" });
   const [passwordArray, setPasswordArray] = useState([]);
   useEffect(() => {
@@ -15,7 +18,30 @@ const Manager = (props) => {
   }, [])
 
   const savePassword = () => {
-    
+    let err;
+    if(urlRef.current.value.length<3){
+      err = "URL should be greater than 3"
+    }
+    else if(unameRef.current.value.length<3){
+      err = "Username should be greater than 3"
+    }
+    else if(passwordRef.current.value.length<3){
+      err = "Password should be greater than 3"
+    }
+    if (urlRef.current.value.length<2||unameRef.current.value.length<2||passwordRef.current.value.length<2) {
+      toast(err, {
+        containerId: "containerB",
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+       });
+    }
+    else{
      setPasswordArray([...passwordArray, { ...form, id: uuidv4() }])
      localStorage.setItem("password", JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]))
      console.log(passwordArray)
@@ -30,6 +56,7 @@ const Manager = (props) => {
        progress: undefined,
        theme: "light",
       });
+    }
     
   }
   const deletePassword = (id) => {
@@ -155,10 +182,10 @@ const Manager = (props) => {
           <span className='font-semibold text-purple-900'>Your own Password Manager</span>
         </div>
         <div className='lg:w-1/2 w-11/12 mx-auto my-6'>
-          <input minLength='3' value={form.site} onChange={handleChange} name='site' className='w-full border-2 border-purple-600 outline-none text-sm px-4 py-1 rounded-xl' placeholder='Enter the URL of the Website' type="text" />
+          <input minLength='3' ref={urlRef} value={form.site} onChange={handleChange} name='site' className='w-full border-2 border-purple-600 outline-none text-sm px-4 py-1 rounded-xl' placeholder='Enter the URL of the Website' type="text" />
           <div className='flex flex-col lg:flex-row items-center justify-center gap-6 my-6 relative'>
-            <input minLength='3' value={form.username} onChange={handleChange} name='username' className="lg:w-2/3 w-full border-2 border-purple-600 outline-none text-sm px-4 py-1 rounded-xl" placeholder='Enter Username' type="text" />
-            <input minLength='3' value={form.password} onChange={handleChange} name='password' className="w-full lg:w-1/3 border-2 border-purple-600 outline-none text-sm px-4 py-1 rounded-xl" placeholder='Enter Password' type={props.passType} />
+            <input minLength='3' ref={unameRef} value={form.username} onChange={handleChange} name='username' className="lg:w-2/3 w-full border-2 border-purple-600 outline-none text-sm px-4 py-1 rounded-xl" placeholder='Enter Username' type="text" />
+            <input minLength='3' ref={passwordRef} value={form.password} onChange={handleChange} name='password' className="w-full lg:w-1/3 border-2 border-purple-600 outline-none text-sm px-4 py-1 rounded-xl" placeholder='Enter Password' type={props.passType} />
             <button className="absolute right-3 top-[63px] lg:top-[9px]" onClick={props.togglePassword}><img ref={props.ref} src="icons/eye.svg" width="16px" alt="" /></button>
           </div>
           <button onClick={savePassword} className='mx-auto py-2 px-3 text-sm bg-purple-600 hover:bg-purple-700 hover:font-bold rounded-full text-white font-semibold focus:ring-4 focus:ring-purple-300 flex items-center justify-center gap-3'><lord-icon
